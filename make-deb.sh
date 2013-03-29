@@ -25,33 +25,37 @@ tar czf $dst.tar.gz $dst
 pushd $dst
 yes | dh_make -e k@treasure-data.com --single -f ../$dst.tar.gz
 ./autogen.sh
-dpkg-buildpackage -rfakeroot -us -uc -S
+#dpkg-source --commit
+# http://raphaelhertzog.com/2011/08/05/my-debian-activities-in-july-2011/
+dpkg-buildpackage -rfakeroot -us -uc -S --source-option=--auto-commit 
 popd
 
-DISTS='lucid precise'
-ARCHITECTURES='i386 amd64'
+sudo pbuilder --build td-agent_$version-1.dsc
 
-for dist in $DISTS; do
-  for arc in $ARCHITECTURES; do
-    echo $password | sudo -S ls
-    echo td-agent_$version-1.dsc
-    pbuilder-dist $dist $arc build td-agent_$version-1.dsc &
-  done
-done
-
-wait
-
-for dist in $DISTS; do
-  for arc in $ARCHITECTURES; do
-    echo $password | sudo -S ls
-    mkdir -p $version/$dist
-    cp ~/pbuilder/$dist-${arc}_result/td-agent_$version-1_$arc.deb $version/$dist
-  done
-done
+#DISTS='lucid precise'
+#ARCHITECTURES='i386 amd64'
+#
+#for dist in $DISTS; do
+#  for arc in $ARCHITECTURES; do
+#    echo $password | sudo -S ls
+#    echo td-agent_$version-1.dsc
+#    pbuilder-dist $dist $arc build td-agent_$version-1.dsc &
+#  done
+#done
+#
+#wait
+#
+#for dist in $DISTS; do
+#  for arc in $ARCHITECTURES; do
+#    echo $password | sudo -S ls
+#    mkdir -p $version/$dist
+#    cp ~/pbuilder/$dist-${arc}_result/td-agent_$version-1_$arc.deb $version/$dist
+#  done
+#done
 cp td-agent_$version-1.dsc           $version/
 cp td-agent_$version-1.debian.tar.gz $version/
 cp td-agent_$version.orig.tar.gz     $version/
-
+#
 wait
-
+#
 tar czf $version.tar.gz $version
